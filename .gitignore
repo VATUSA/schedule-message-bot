@@ -1,0 +1,18 @@
+# Reference project (not part of this bot)
+VATSIM-Events-Bot
+
+# Build artifacts
+/bot
+/dist/
+
+# Local data / SQLite databases
+/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Local environment
+.env
+
+# Editor / OS noise
+.DS_Store

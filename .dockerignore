@@ -1,0 +1,9 @@
+VATSIM-Events-Bot
+.git
+.github
+*.md
+data
+*.db
+.env
+/bot
+/dist
