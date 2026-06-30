@@ -43,7 +43,7 @@ func run(log *slog.Logger) error {
 	}
 	defer func() { _ = store.Close() }()
 
-	bot, err := discord.New(cfg.Token, cfg.GuildID, cfg.AllowedRoleIDs, store, log)
+	bot, err := discord.New(cfg.Token, cfg.GuildID, cfg.RequiredRoleID, store, log)
 	if err != nil {
 		return err
 	}

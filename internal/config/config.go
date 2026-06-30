@@ -17,9 +17,9 @@ type Config struct {
 	// which makes command updates appear instantly (global commands can take up
 	// to an hour to propagate). Leave empty to register commands globally.
 	GuildID string
-	// AllowedRoleIDs is the set of role IDs permitted to use the bot's commands.
-	// If empty, no role restriction is applied.
-	AllowedRoleIDs []string
+	// RequiredRoleID is the ID of the role a member must hold to use the bot's
+	// commands. If empty, no role restriction is applied.
+	RequiredRoleID string
 	// DatabasePath is the filesystem path to the SQLite database.
 	DatabasePath string
 	// PollInterval is how often the scheduler checks for due messages.
@@ -32,7 +32,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		Token:          os.Getenv("DISCORD_TOKEN"),
 		GuildID:        os.Getenv("DISCORD_GUILD_ID"),
-		AllowedRoleIDs: splitAndTrim(os.Getenv("ALLOWED_ROLE_IDS")),
+		RequiredRoleID: strings.TrimSpace(os.Getenv("REQUIRED_ROLE_ID")),
 		DatabasePath:   envOrDefault("DATABASE_PATH", "data/schedule.db"),
 		PollInterval:   envDurationOrDefault("POLL_INTERVAL", 15*time.Second),
 	}
@@ -64,20 +64,4 @@ func envDurationOrDefault(key string, def time.Duration) time.Duration {
 		return def
 	}
 	return d
-}
-
-// splitAndTrim splits a comma-separated list and trims whitespace, dropping
-// empty entries.
-func splitAndTrim(s string) []string {
-	if s == "" {
-		return nil
-	}
-	parts := strings.Split(s, ",")
-	out := make([]string, 0, len(parts))
-	for _, p := range parts {
-		if p = strings.TrimSpace(p); p != "" {
-			out = append(out, p)
-		}
-	}
-	return out
 }
