@@ -1,6 +1,6 @@
 # schedule-message-bot
 
-[![CI](https://github.com/vatusa/schedule-message-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/vatusa/schedule-message-bot/actions/workflows/ci.yml)
+[![Verify](https://github.com/vatusa/schedule-message-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/vatusa/schedule-message-bot/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/vatusa/schedule-message-bot.svg)](https://pkg.go.dev/github.com/vatusa/schedule-message-bot)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vatusa/schedule-message-bot)](https://goreportcard.com/report/github.com/vatusa/schedule-message-bot)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/vatusa/schedule-message-bot)](go.mod)
@@ -89,8 +89,9 @@ go vet ./...     # static checks
 golangci-lint run  # lint (see .golangci.yml)
 ```
 
-CI runs build, tests (with `-race`), `go vet`, `golangci-lint`, and a Docker
-build on every pull request — see [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+The Verify workflow runs build, tests (with `-race`), `go vet`, `golangci-lint`,
+and a Docker build on every pull request and on pushes to `master` — see
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Project layout
 
