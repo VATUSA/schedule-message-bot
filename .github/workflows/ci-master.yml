@@ -1,15 +1,13 @@
-name: Production Release
+name: Build and Push Image
+# On every push to master, build and push the image to Docker Hub (tagged
+# `latest` and the commit SHA). Production rollout is a separate, manual step:
+# prod-release.yml pins the prod overlay in the gitops repo to a chosen SHA.
 on:
-  workflow_dispatch:
-    inputs:
-      commit_sha:
-        description: 'Commit SHA to checkout (optional)'
-        required: false
-        default: ''
+  push:
+    branches: [master]
 jobs:
-  common-release:
-    uses: vatusa/gitops/.github/workflows/common-release.yml@main
+  common-build:
+    uses: vatusa/gitops/.github/workflows/common-build.yml@main
     with:
       image-name: 'schedule-message-bot'
-      kustomization-folder: 'schedule-message-bot'
     secrets: inherit

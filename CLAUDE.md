@@ -59,7 +59,28 @@ in-memory timers, so it survives restarts.
 
 ## Deployment
 
-The Dockerfile produces a static binary in a distroless image and persists the
-database under `/app/data` (mount a volume there). The CI deploy job will be
-added later; PR verification (build/test/lint/docker build) lives in
-`.github/workflows/ci.yml`.
+The Dockerfile produces a static binary in a distroless image (final stage is
+named `app`, as the shared build workflow expects) and persists the database
+under `/app/data` (mount a volume there).
+
+Deployed to the VATUSA Kubernetes cluster via ArgoCD, with manifests in the
+`vatusa/gitops` repo under `schedule-message-bot/` (base + `overlays/prod`).
+The Deployment runs a **single replica** with a `Recreate` strategy — SQLite has
+one writer and the scheduler must not run twice — backed by a `ReadWriteOnce`
+PVC mounted at `/app/data`. Config is split: non-secret values
+(`DATABASE_PATH`, `POLL_INTERVAL`) come from a ConfigMap; the secrets
+(`DISCORD_TOKEN`, `DISCORD_GUILD_ID`, `REQUIRED_ROLE_ID`) come from a
+`schedule-message-bot-secrets` Secret that is created out-of-band in the cluster
+(not stored in gitops).
+
+CI/CD workflows (all reuse shared workflows from `vatusa/gitops`):
+
+- `.github/workflows/ci.yml` — PR/branch verification: build, test (`-race`),
+  `go vet`, `golangci-lint`, and a Docker smoke build (no push).
+- `.github/workflows/ci-master.yml` — on push to `master`, builds and pushes the
+  image to Docker Hub as `vatusa/schedule-message-bot:latest` and `:<sha>`.
+- `.github/workflows/prod-release.yml` — manual `workflow_dispatch` that pins the
+  prod overlay in gitops to a chosen SHA; ArgoCD then rolls it out.
+
+So a release is: push to `master` (builds the image) → run **Production
+Release** (bumps the gitops tag) → ArgoCD syncs.

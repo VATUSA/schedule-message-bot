@@ -16,7 +16,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/bot . \
 	&& mkdir -p /out/data
 
 # ---- Runtime stage ----
-FROM gcr.io/distroless/static-debian12:nonroot
+# Named `app` because the shared gitops build workflow (common-build.yml) builds
+# with `target: app`.
+FROM gcr.io/distroless/static-debian12:nonroot AS app
 
 WORKDIR /app
 
