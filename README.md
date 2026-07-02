@@ -32,7 +32,10 @@ direct `image` URL is appended so Discord embeds it.
 
 ## Configuration
 
-Configuration is read from environment variables (see [`.env.example`](.env.example)):
+Configuration is read from environment variables. On startup the bot also loads
+a `.env` file from the working directory if one is present (see
+[`.env.example`](.env.example)); values already set in the environment take
+precedence over `.env`.
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
@@ -60,8 +63,6 @@ The token is **only** read from the environment — never hard-code it.
 ```sh
 # Provide configuration (copy and edit the example).
 cp .env.example .env
-# Export it into your shell, then run:
-set -a; source .env; set +a   # bash/zsh
 go run .
 ```
 

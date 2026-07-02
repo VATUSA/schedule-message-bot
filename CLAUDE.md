@@ -28,7 +28,9 @@ in-memory timers, so it survives restarts.
 - `main.go` — loads config, opens storage, starts the Discord session and the
   scheduler goroutine, and handles graceful shutdown on SIGINT/SIGTERM.
 - `internal/config` — all configuration comes from environment variables.
-  `DISCORD_TOKEN` is required; everything else has a default.
+  `DISCORD_TOKEN` is required; everything else has a default. A `.env` file in
+  the working directory, if present, is loaded first (via `godotenv`) without
+  overriding variables already set in the environment.
 - `internal/storage` — SQLite-backed CRUD for `ScheduledMessage`. Status moves
   through `pending → sent | failed | cancelled`. Times are stored as Unix
   seconds (UTC). Uses a single open connection (SQLite has one writer).

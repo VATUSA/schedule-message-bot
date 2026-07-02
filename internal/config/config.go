@@ -3,10 +3,13 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // Config holds all runtime configuration for the bot.
@@ -27,8 +30,14 @@ type Config struct {
 }
 
 // Load reads configuration from environment variables, applying defaults and
-// validating required values.
+// validating required values. If a .env file is present in the working
+// directory, its values are loaded first without overriding variables already
+// set in the environment.
 func Load() (*Config, error) {
+	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("loading .env: %w", err)
+	}
+
 	cfg := &Config{
 		Token:          os.Getenv("DISCORD_TOKEN"),
 		GuildID:        os.Getenv("DISCORD_GUILD_ID"),
