@@ -164,7 +164,7 @@ func (b *Bot) handleSchedule(s *discordgo.Session, i *discordgo.InteractionCreat
 		return
 	}
 
-	b.respond(i, fmt.Sprintf(
+	b.respondEphemeral(i, fmt.Sprintf(
 		"✅ Message scheduled for **%s** in <#%s>\n🆔 **Schedule ID:** %d",
 		formatZulu(sendAt), channel.ID, id))
 }
@@ -182,7 +182,7 @@ func (b *Bot) handleCancel(i *discordgo.InteractionCreate) {
 		b.respondEphemeral(i, fmt.Sprintf("❌ No pending scheduled message found with ID **%d**.", id))
 		return
 	}
-	b.respond(i, fmt.Sprintf("🛑 Scheduled message with ID **%d** has been cancelled.", id))
+	b.respondEphemeral(i, fmt.Sprintf("🛑 Scheduled message with ID **%d** has been cancelled.", id))
 }
 
 func (b *Bot) handleList(i *discordgo.InteractionCreate) {
@@ -220,10 +220,6 @@ func optionMap(opts []*discordgo.ApplicationCommandInteractionDataOption) map[st
 		m[o.Name] = o
 	}
 	return m
-}
-
-func (b *Bot) respond(i *discordgo.InteractionCreate, content string) {
-	b.respondWith(i, content, 0)
 }
 
 func (b *Bot) respondEphemeral(i *discordgo.InteractionCreate, content string) {
