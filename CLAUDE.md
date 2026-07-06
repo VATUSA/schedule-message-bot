@@ -69,7 +69,7 @@ The Deployment runs a **single replica** with a `Recreate` strategy — SQLite h
 one writer and the scheduler must not run twice — backed by a `ReadWriteOnce`
 PVC mounted at `/app/data`. Config is split: non-secret values
 (`DATABASE_PATH`, `POLL_INTERVAL`) come from a ConfigMap; the secrets
-(`DISCORD_TOKEN`, `DISCORD_GUILD_ID`, `REQUIRED_ROLE_ID`) come from a
+(`DISCORD_TOKEN`, `DISCORD_GUILD_ID`, `REQUIRED_ROLE_IDS`) come from a
 `schedule-message-bot-secrets` Secret that is created out-of-band in the cluster
 (not stored in gitops).
 

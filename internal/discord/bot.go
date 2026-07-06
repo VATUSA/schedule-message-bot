@@ -16,17 +16,17 @@ import (
 
 // Bot owns the Discord session and command handlers.
 type Bot struct {
-	session        *discordgo.Session
-	store          *storage.Store
-	guildID        string
-	requiredRoleID string
-	log            *slog.Logger
+	session         *discordgo.Session
+	store           *storage.Store
+	guildID         string
+	requiredRoleIDs map[string]struct{}
+	log             *slog.Logger
 
 	registered []*discordgo.ApplicationCommand
 }
 
 // New creates a Bot from a token. It does not connect; call Open for that.
-func New(token, guildID, requiredRoleID string, store *storage.Store, log *slog.Logger) (*Bot, error) {
+func New(token, guildID string, requiredRoleIDs []string, store *storage.Store, log *slog.Logger) (*Bot, error) {
 	session, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return nil, fmt.Errorf("create discord session: %w", err)
@@ -35,12 +35,17 @@ func New(token, guildID, requiredRoleID string, store *storage.Store, log *slog.
 	// we only ever send (never read) messages.
 	session.Identify.Intents = discordgo.IntentsGuilds
 
+	roleSet := make(map[string]struct{}, len(requiredRoleIDs))
+	for _, id := range requiredRoleIDs {
+		roleSet[id] = struct{}{}
+	}
+
 	b := &Bot{
-		session:        session,
-		store:          store,
-		guildID:        guildID,
-		requiredRoleID: requiredRoleID,
-		log:            log,
+		session:         session,
+		store:           store,
+		guildID:         guildID,
+		requiredRoleIDs: roleSet,
+		log:             log,
 	}
 	session.AddHandler(b.onInteraction)
 	return b, nil
@@ -105,17 +110,17 @@ func (b *Bot) onInteraction(s *discordgo.Session, i *discordgo.InteractionCreate
 	}
 }
 
-// authorized reports whether the invoking member holds the required role. When
-// no role is configured, all members are permitted.
+// authorized reports whether the invoking member holds any of the required
+// roles. When no roles are configured, all members are permitted.
 func (b *Bot) authorized(i *discordgo.InteractionCreate) bool {
-	if b.requiredRoleID == "" {
+	if len(b.requiredRoleIDs) == 0 {
 		return true
 	}
 	if i.Member == nil {
 		return false
 	}
 	for _, role := range i.Member.Roles {
-		if role == b.requiredRoleID {
+		if _, ok := b.requiredRoleIDs[role]; ok {
 			return true
 		}
 	}

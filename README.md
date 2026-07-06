@@ -16,9 +16,9 @@ survive bot restarts and deploys.
 
 ## Commands
 
-All commands are Discord slash commands. If `REQUIRED_ROLE_ID` is configured,
-only members holding that role may use them; anyone else gets an ephemeral
-"you do not have permission" reply.
+All commands are Discord slash commands. If `REQUIRED_ROLE_IDS` is configured,
+only members holding **any** of those roles may use them; anyone else gets an
+ephemeral "you do not have permission" reply.
 
 | Command | Description |
 | --- | --- |
@@ -41,7 +41,7 @@ precedence over `.env`.
 | --- | --- | --- | --- |
 | `DISCORD_TOKEN` | **yes** | — | Discord bot token. |
 | `DISCORD_GUILD_ID` | no | — | Register commands to a single guild for instant updates. Empty registers globally (propagation can take up to an hour). |
-| `REQUIRED_ROLE_ID` | no | — | ID of the role required to use the bot's commands. Empty allows all members. |
+| `REQUIRED_ROLE_IDS` | no | — | Comma-separated role IDs; holding any one permits using the bot's commands. Empty allows all members. |
 | `DATABASE_PATH` | no | `data/schedule.db` | Path to the SQLite database file. |
 | `POLL_INTERVAL` | no | `15s` | How often the scheduler checks for due messages (a Go duration). |
 
@@ -73,7 +73,7 @@ docker build -t schedule-message-bot .
 docker run --rm \
   -e DISCORD_TOKEN=... \
   -e DISCORD_GUILD_ID=... \
-  -e REQUIRED_ROLE_ID=... \
+  -e REQUIRED_ROLE_IDS=...,... \
   -v "$(pwd)/data:/app/data" \
   schedule-message-bot
 ```
