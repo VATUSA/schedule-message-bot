@@ -1,7 +1,6 @@
-name: Build and Push Image
-# On every push to master, build and push the image to Docker Hub (tagged
-# `latest` and the commit SHA). Production rollout is a separate, manual step:
-# prod-release.yml pins the prod overlay in the gitops repo to a chosen SHA.
+name: CI to Production
+# schedule-message-bot has no dev environment: every push to master builds the
+# image and releases it straight to prod, no manual gate.
 on:
   push:
     branches: [master]
@@ -10,4 +9,11 @@ jobs:
     uses: vatusa/gitops/.github/workflows/common-build.yml@main
     with:
       image-name: 'schedule-message-bot'
+    secrets: inherit
+  common-release:
+    uses: vatusa/gitops/.github/workflows/common-release.yml@main
+    needs: common-build
+    with:
+      image-name: 'schedule-message-bot'
+      kustomization-folder: 'schedule-message-bot'
     secrets: inherit

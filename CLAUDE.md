@@ -78,9 +78,8 @@ CI/CD workflows (all reuse shared workflows from `vatusa/gitops`):
 - `.github/workflows/ci.yml` — PR/branch verification: build, test (`-race`),
   `go vet`, `golangci-lint`, and a Docker smoke build (no push).
 - `.github/workflows/ci-master.yml` — on push to `master`, builds and pushes the
-  image to Docker Hub as `vatusa/schedule-message-bot:latest` and `:<sha>`.
-- `.github/workflows/prod-release.yml` — manual `workflow_dispatch` that pins the
-  prod overlay in gitops to a chosen SHA; ArgoCD then rolls it out.
+  image to Docker Hub as `vatusa/schedule-message-bot:latest` and `:<sha>`, then
+  pins the prod overlay in gitops to that SHA; ArgoCD then rolls it out.
 
-So a release is: push to `master` (builds the image) → run **Production
-Release** (bumps the gitops tag) → ArgoCD syncs.
+This app has no dev environment, so a release is simply: push to `master` →
+image builds and deploys straight to prod, no manual gate.
