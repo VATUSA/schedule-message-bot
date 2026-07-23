@@ -163,7 +163,7 @@ func (b *Bot) handleSchedule(s *discordgo.Session, i *discordgo.InteractionCreat
 		b.respondEphemeral(i, "❌ Failed to schedule the message. Please try again.")
 		return
 	}
-
+	b.log.Info(fmt.Sprintf("got command for scheduled message %d", id))
 	b.respondEphemeral(i, fmt.Sprintf(
 		"✅ Message scheduled for **%s** in <#%s>\n🆔 **Schedule ID:** %d",
 		formatZulu(sendAt), channel.ID, id))
