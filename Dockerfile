@@ -1,7 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # ---- Build stage ----
-FROM golang:1.26-alpine AS build
+# --platform=$BUILDPLATFORM keeps the build stage on the runner's native arch and
+# lets Go cross-compile to $TARGETARCH instead of emulating the whole toolchain
+# under QEMU.
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS build
 
 WORKDIR /src
 
@@ -11,8 +14,11 @@ RUN go mod download
 
 COPY . .
 
+ARG TARGETOS
+ARG TARGETARCH
+
 # CGO is disabled: modernc.org/sqlite is pure Go, so we get a static binary.
-RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/bot . \
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -trimpath -ldflags="-s -w" -o /out/bot . \
 	&& mkdir -p /out/data
 
 # ---- Runtime stage ----
